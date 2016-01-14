@@ -51,21 +51,24 @@
   `(mp:with-lock (,lock)
     ,@body))
 
-#+(not (or sbcl openmcl cmu))
+#+(not (or sbcl openmcl cmu lispworks))
 (error "missing port for this compiler, please provide for multiprocessing primitives for this compiler in ~A" *load-pathname*)
 
 (defun make-process (function &key name)
   #+sbcl (sb-thread:make-thread function :name name)
   #+openmcl (ccl:process-run-function name function)
-  #+cmu (mp:make-process function :name name))
+  #+cmu (mp:make-process function :name name)
+  #+lispworks (mp:process-run-function name function))
 
 (defun destroy-process (process)
   #+sbcl (sb-thread:terminate-thread process)
   #+openmcl (ccl:process-kill process)
-  #+cmu (mp:destroy-process process))
+  #+cmu (mp:destroy-process process)
+  #+lispworks (mp:process-kill process))
 
 (defun process-active-p (process)
   #+sbcl (sb-thread:thread-alive-p process)
   #+openmcl (ccl::process-active-p process)
-  #+cmu (mp:process-active-p process))
+  #+cmu (mp:process-active-p process)
+  #+lispworks (mp:process-alive-p process))
 
