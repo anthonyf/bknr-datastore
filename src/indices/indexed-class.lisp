@@ -76,7 +76,7 @@ also index subclasses of the class to which the slot belongs, default is T")
 
 (defclass index-effective-slot-definition (standard-effective-slot-definition)
   ((indices :initarg :indices :initform nil
-	    :accessor index-effective-slot-definition-indices)))
+            :accessor index-effective-slot-definition-indices)))
 
 (defmethod class-all-indexed-superclasses ((class indexed-class))
   (let (result)
@@ -92,7 +92,7 @@ also index subclasses of the class to which the slot belongs, default is T")
       (superclasses class))
     (nreverse result)))
 
-(defmethod direct-slot-definition-class ((class indexed-class) &key index index-type)
+(defmethod direct-slot-definition-class ((class indexed-class) &key index index-type &allow-other-keys)
   (if (or index index-type)
       'index-direct-slot-definition
       (call-next-method)))
@@ -281,14 +281,15 @@ also index subclasses of the class to which the slot belongs, default is T")
 
 (defmethod compute-slots ((class indexed-class))
   (let* ((normal-slots (call-next-method))
-	 (destroyed-p-slot #.`(make-instance
-			       'index-effective-slot-definition
-			       :name 'destroyed-p
-			       :initform nil
-			       :class class
-			       #+cmu
-			       ,@'(:readers nil :writers nil)
-			       :initfunction #'(lambda () nil))))
+         (destroyed-p-slot #.`(make-instance
+                               'index-effective-slot-definition
+                               :name 'destroyed-p
+                               :initform nil
+                               #+lispworks :type
+                               #-lispworks :class class
+                               #+cmu
+                               ,@'(:readers nil :writers nil)
+                               :initfunction #'(lambda () nil))))
     (cons destroyed-p-slot normal-slots)))
 
 (defvar *indexed-class-override* nil)
@@ -323,7 +324,7 @@ also index subclasses of the class to which the slot belongs, default is T")
 
 (defvar *indices-remove-p* t)
 
-(defmethod make-instance :around ((class indexed-class) &key)
+(defmethod make-instance :around ((class indexed-class) &rest initargs)
   (let* ((*in-make-instance-p* t)
 	 (object (call-next-method))
 	 (added-indices)

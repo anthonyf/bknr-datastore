@@ -82,26 +82,27 @@
    (transient :initarg :transient
               :initform nil)))
 
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defgeneric transient-slot-p (slotd)
+    (:method ((slotd t))
+      t)
+    (:method ((slotd persistent-direct-slot-definition))
+      (slot-value slotd 'transient))
+    (:method ((slotd persistent-effective-slot-definition))
+      (slot-value slotd 'transient))))
 
-(defgeneric transient-slot-p (slotd)
-  (:method ((slotd t))
-    t)
-  (:method ((slotd persistent-direct-slot-definition))
-    (slot-value slotd 'transient))
-  (:method ((slotd persistent-effective-slot-definition))
-    (slot-value slotd 'transient)))
-
-(defgeneric relaxed-object-reference-slot-p (slotd)
-  (:method ((slotd t))
-    nil)
-  (:method ((slotd persistent-effective-slot-definition))
-    (slot-value slotd 'relaxed-object-reference))
-  (:method ((slotd persistent-direct-slot-definition))
-    (slot-value slotd 'relaxed-object-reference))
-  (:documentation "Return whether the given slot definition specifies
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defgeneric relaxed-object-reference-slot-p (slotd)
+    (:method ((slotd t))
+      nil)
+    (:method ((slotd persistent-effective-slot-definition))
+      (slot-value slotd 'relaxed-object-reference))
+    (:method ((slotd persistent-direct-slot-definition))
+      (slot-value slotd 'relaxed-object-reference))
+    (:documentation "Return whether the given slot definition specifies
 that the slot is relaxed.  If a relaxed slot holds a pointer to
 another persistent object and the pointed-to object is deleted, slot
-reads will return nil."))
+reads will return nil.")))
 
 (defun undo-set-slot (object slot-name value)
   (if (eq value 'unbound)
@@ -153,14 +154,14 @@ reads will return nil."))
                (format stream "The transient slot ~A in class ~A was defined as having an initarg, which is not supported"
                        slot-name (class-name class))))))
 
-(defmethod direct-slot-definition-class ((class persistent-class) &key initargs transient name)
+(defmethod direct-slot-definition-class ((class persistent-class) &key initargs transient name &allow-other-keys)
   ;; It might be better to do the error checking in an
   ;; initialize-instance method of persistent-direct-slot-definition
   (when (and initargs transient)
     (error 'transient-slot-cannot-have-initarg :class class :slot-name name))
   'persistent-direct-slot-definition)
 
-(defmethod effective-slot-definition-class ((class persistent-class) &key)
+(defmethod effective-slot-definition-class ((class persistent-class) &key &allow-other-keys)
   'persistent-effective-slot-definition)
 
 (defmethod compute-effective-slot-definition :around ((class persistent-class) name direct-slots)
