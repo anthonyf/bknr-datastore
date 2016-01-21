@@ -24,6 +24,7 @@
                :bknr.indices
                :yason
                :trivial-utf-8
+               :arnesi
                #+sbcl :sb-posix)
 
   :components ((:module "data" :components ((:file "package")
