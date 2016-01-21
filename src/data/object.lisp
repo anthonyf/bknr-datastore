@@ -44,10 +44,8 @@
       (error 'object-subsystem-not-found-in-store :store *store*))
     subsystem))
 
-(eval-when (:compile-toplevel :load-toplevel :execute)
-  (finalize-inheritance
-   (defclass persistent-class (indexed-class)
-     ())))
+(defclass persistent-class (indexed-class)
+  ())
 
 (defmethod validate-superclass ((sub persistent-class) (super indexed-class))
   t)
@@ -82,17 +80,15 @@
    (transient :initarg :transient
               :initform nil)))
 
-(eval-when (:compile-toplevel :load-toplevel :execute)
-  (defgeneric transient-slot-p (slotd)
-    (:method ((slotd t))
-      t)
-    (:method ((slotd persistent-direct-slot-definition))
-      (slot-value slotd 'transient))
-    (:method ((slotd persistent-effective-slot-definition))
-      (slot-value slotd 'transient))))
+(defgeneric transient-slot-p (slotd)
+  (:method ((slotd t))
+    t)
+  (:method ((slotd persistent-direct-slot-definition))
+    (slot-value slotd 'transient))
+  (:method ((slotd persistent-effective-slot-definition))
+    (slot-value slotd 'transient)))
 
-(eval-when (:compile-toplevel :load-toplevel :execute)
-  (defgeneric relaxed-object-reference-slot-p (slotd)
+(defgeneric relaxed-object-reference-slot-p (slotd)
     (:method ((slotd t))
       nil)
     (:method ((slotd persistent-effective-slot-definition))
@@ -102,7 +98,7 @@
     (:documentation "Return whether the given slot definition specifies
 that the slot is relaxed.  If a relaxed slot holds a pointer to
 another persistent object and the pointed-to object is deleted, slot
-reads will return nil.")))
+reads will return nil."))
 
 (defun undo-set-slot (object slot-name value)
   (if (eq value 'unbound)
