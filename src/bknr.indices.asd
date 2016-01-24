@@ -29,6 +29,5 @@
 (defsystem :bknr.indices.test  
   :depends-on (:bknr.indices :unit-test)
   :components ((:module "indices"
-                        :components ((:file "package") 
-                                     (:file "indices-tests" :depends-on ("package"))))))
+                        :components ((:file "indices-tests")))))
 

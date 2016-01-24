@@ -78,7 +78,7 @@ also index subclasses of the class to which the slot belongs, default is T")
 
 (defclass index-effective-slot-definition (standard-effective-slot-definition)
   ((indices :initarg :indices :initform nil
-            :accessor index-effective-slot-definition-indices)))
+	    :accessor index-effective-slot-definition-indices)))
 
 (defmethod class-all-indexed-superclasses ((class indexed-class))
   (let (result)
