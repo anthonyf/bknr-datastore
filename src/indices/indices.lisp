@@ -4,6 +4,8 @@
 
 (in-package :bknr.indices)
 
+(declaim (optimize (debug 3) (speed 3) (space 3)))
+
 ;;;;;;;;;;;;;;;;;;;;
 ;;; Slot-bound index
 

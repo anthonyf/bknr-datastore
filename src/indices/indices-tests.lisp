@@ -5,6 +5,8 @@
 
 (in-package :bknr.indices.tests)
 
+(declaim (optimize (debug 3) (speed 3) (space 3)))
+
 (define-test-class index-test-class
     ((index :initarg :index)))
 

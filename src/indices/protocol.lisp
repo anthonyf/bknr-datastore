@@ -1,5 +1,7 @@
 (in-package :bknr.indices)
 
+(declaim (optimize (debug 3) (speed 3) (space 3)))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; CLOS Protocol for index objects
 

@@ -47,6 +47,3 @@
 	   #:parent-category
 	   #:parent-categories
 	   #:tree-categories))
-
-(defpackage :bknr.indices.tests
-  (:use :cl :bknr.indices :unit-test))

@@ -1,5 +1,7 @@
 (in-package :bknr.indices)
 
+(declaim (optimize (debug 3) (speed 3) (space 3)))
+
 ;; XXX slots from inherited class indices
 
 ;;; XXX update-instance-for-different-class
@@ -242,17 +244,14 @@ also index subclasses of the class to which the slot belongs, default is T")
 (defmethod initialize-instance :before ((class indexed-class) &key class-indices)
   (validate-index-declaration class class-indices))
 
-(defmethod reinitialize-instance :before ((class indexed-class) &key class-indices)
-  (validate-index-declaration class class-indices))
-
 ;;; avoid late instantiation
 
-#+(or allegro cmu openmcl sbcl)
+#+(or allegro cmu openmcl sbcl lispworks)
 (defmethod initialize-instance :after ((class indexed-class) &key)
   (compute-class-indices class (indexed-class-index-definitions class))
   (reinitialize-class-indices class))
 
-#+(or allegro cmu openmcl sbcl)
+#+(or allegro cmu openmcl sbcl lispworks)
 (defmethod reinitialize-instance :after ((class indexed-class) &key)
   (compute-class-indices class (indexed-class-index-definitions class))
   (reinitialize-class-indices class))
@@ -270,7 +269,8 @@ also index subclasses of the class to which the slot belongs, default is T")
 	    (index-reinitialize (index-holder-index holder)
 				(index-holder-index old-holder))))))))
 
-(defmethod reinitialize-instance :before ((class indexed-class) &key)
+(defmethod reinitialize-instance :before ((class indexed-class) &key class-indices)
+  (validate-index-declaration class class-indices)
   (setf (indexed-class-old-indices class) (indexed-class-indices class)
 	(indexed-class-indices class) nil))
 
@@ -285,8 +285,7 @@ also index subclasses of the class to which the slot belongs, default is T")
                                'index-effective-slot-definition
                                :name 'destroyed-p
                                :initform nil
-                               #+lispworks :type
-                               #-lispworks :class class
+                               #-lispworks #-lispworks :class class
                                #+cmu
                                ,@'(:readers nil :writers nil)
                                :initfunction #'(lambda () nil))))
